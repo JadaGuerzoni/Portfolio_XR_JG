@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jada Guerzoni — 3D &amp; XR Developer</title>
+  <meta name="description" content="Jada Guerzoni — 3D &amp; XR Developer. Interactive 3D portfolio.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="scene" aria-label="Interactive 3D workshop with Jada's projects"></canvas>
+
+<div id="loader"><div class="arcs"><i></i><i></i><i></i></div>Loading scene…</div>
+
+<header class="topbar">
+  <div class="ident">
+    <span class="badge" aria-hidden="true">J<span class="g">G</span><span class="dot">.</span></span>
+    <div>
+      <h1>Jada Guerzoni</h1>
+      <p>3D &amp; XR Developer · Student MCT XR</p>
+    </div>
+  </div>
+  <nav class="nav" aria-label="Portfolio">
+    <button id="btn-all" type="button">Projects <span class="count">4</span></button>
+    <button id="btn-skills" type="button">Skills</button>
+    <button id="btn-contact" class="accent" type="button">Contact</button>
+  </nav>
+</header>
+
+<div id="hotspots" aria-label="Objects in the scene"></div>
+
+<aside id="panel" aria-live="polite" aria-hidden="true">
+  <div class="p-head">
+    <span class="eyebrow" id="p-eyebrow"></span>
+    <button class="x" id="p-close" type="button" aria-label="Close and zoom out">×</button>
+  </div>
+  <div class="p-body" id="p-body"></div>
+  <div class="nav-row">
+    <button type="button" id="p-prev">← Previous</button>
+    <button type="button" id="p-next">Next →</button>
+  </div>
+</aside>
+
+<div id="modal" hidden>
+  <div class="m-box" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <div class="m-head">
+      <h2 id="m-title">All Projects</h2>
+      <button class="x" id="m-close" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="m-list" id="m-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/images.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
