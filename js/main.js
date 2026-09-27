@@ -63,9 +63,9 @@
   const PROJECT_ORDER = ["fpt", "car", "tagrun", "mail"];
 
   const SKILLS = [
-    ["XR & Game Development", ["Unity", "C#", "OpenXR", "XR Interaction Toolkit", "Blender", "VR Development", "UI for VR"]],
-    ["Front-end Development", ["HTML", "CSS", "JavaScript", "React", "REST API"]],
-    ["Back-end Development", ["Python", "C#", "FastAPI", ".NET", "GraphQL", "REST API", "Microsoft Azure"]],
+    ["XR & Game Development", ["Unity", "Meta developer", "OpenXR", "XR Interaction Toolkit", "Blender", "VR Development", "UI for VR"]],
+    ["Front-end Development", ["HTML", "CSS", "JavaScript", "React", "Fast API"]],
+    ["Back-end Development", ["Python", "C#", ".NET", "GraphQL", "Microsoft Azure"]],
     ["Databases", ["MySQL", "PostgreSQL", "MongoDB", "SQL", "NumPy", "Pandas"]],
     ["IoT & Electronics", ["Raspberry Pi", "Arduino", "GPIO", "Sensor Integration", "Bit Operations"]],
     ["Design", ["Adobe Photoshop", "Figma", "UI Design", "UX Design", "Wireframing"]],
@@ -78,7 +78,8 @@
 
   const VIEWS = {
     about: {
-      label: "About me", eyebrow: "Avatar · About",
+      label: 'About me',
+      eyebrow: 'Avatar · About',
       html: () => `
         <h2>Hi, I'm Jada</h2>
         <p>I'm passionate about building interactive experiences that bring technology and creativity together. As an XR student, I enjoy exploring new ideas, solving challenges, and turning concepts into immersive applications.</p>
@@ -92,17 +93,18 @@
         <div class="cta-row">
           <button class="cta" type="button" data-go="projects">See my projects</button>
           <button class="cta ghost" type="button" data-go="skills">View skills</button>
-        </div>`
+        </div>`,
     },
     skills: {
-      label: "Skills", eyebrow: "Workbench · Skills",
-      html: () => `<h2>Skills</h2>` + SKILLS.map(([g, list], i) =>
-        `<div class="skill-grp"><h4>${esc(g)}</h4>${chips(list, i === 0 ? "soft" : "")}</div>`).join("")
+      label: 'Skills',
+      eyebrow: 'Workbench · Skills',
+      html: () => `<h2>Skills</h2>` + SKILLS.map(([g, list], i) => `<div class="skill-grp"><h4>${esc(g)}</h4>${chips(list, i === 0 ? 'soft' : '')}</div>`).join(''),
     },
     contact: {
-      label: "Contact", eyebrow: "Neon sign · Contact",
+      label: 'Contact',
+      eyebrow: 'Neon sign · Contact',
       html: () => `
-        <h2>Let's build something together.</h2>
+        <h2>Let's build visions together.</h2>
         <p>Have an idea for an XR experience, a project, or an internship? Send me a message.</p>
         <div class="contact-line"><div><small>Email</small><b>${EMAIL}</b></div><button class="copy" type="button" data-copy="${EMAIL}">Copy</button></div>
         <div class="contact-line"><div><small>Phone</small><b>${PHONE}</b></div><button class="copy" type="button" data-copy="${PHONE}">Copy</button></div>
@@ -110,8 +112,8 @@
           <a class="cta" href="mailto:${EMAIL}">Send an email</a>
           <a class="cta ghost" href="${LINKEDIN}" target="_blank" rel="noopener">LinkedIn ↗</a>
           <a class="cta ghost" href="${GITHUB}" target="_blank" rel="noopener">GitHub ↗</a>
-        </div>`
-    }
+        </div>`,
+    },
   };
   PROJECT_ORDER.forEach(k => {
     const p = PROJECTS[k];
@@ -148,6 +150,7 @@
         </div>`
     };
   });
+  VIEWS.board = { label: 'All projects' }; // opens the projects overview instead of a panel
   const TOUR = ["about", "fpt", "car", "tagrun", "mail", "skills", "contact"];
 
   /* ---------------- UI helpers ---------------- */
@@ -275,7 +278,7 @@
   key.position.set(2, 16, 9); key.target.position.set(0, 0, -0.5);
   key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0005; key.shadow.normalBias = 0.02; key.shadow.camera.near = 5; key.shadow.camera.far = 40;
   scene.add(key, key.target);
-  const lampLight = new THREE.PointLight(0xffa04a, 1.6, 16, 1.6); lampLight.position.set(0.2, 4.4, -0.8); scene.add(lampLight);
+  const lampLight = new THREE.PointLight(0xffa04a, 1.6, 16, 1.6); lampLight.position.set(-0.3, 4.4, -0.8); scene.add(lampLight);
   const tealLight = new THREE.PointLight(0x3fe0d0, 1.1, 14, 1.6); tealLight.position.set(6.5, 3.5, 2.5); scene.add(tealLight);
   const neonLight = new THREE.PointLight(0xd65cff, 1.3, 12, 1.6); neonLight.position.set(0.8, 3.9, -4.6); scene.add(neonLight);
   const coolFill = new THREE.DirectionalLight(0x6d7bff, 0.35); coolFill.position.set(-10, 6, 8); scene.add(coolFill);
@@ -336,16 +339,8 @@
   box(0.12, 2.2, 0.2, M(0x4a3b66), world, -5.2, 4.2, -5.95);
   box(0.12, 2.2, 0.2, M(0x4a3b66), world, -6.9, 4.2, -5.95);
   box(0.12, 2.2, 0.2, M(0x4a3b66), world, -3.5, 4.2, -5.95);
-  // pegboard with tools on left wall
-  box(0.1, 1.8, 3.4, M(0x6b4a34), world, -8.95, 3.2, 0.2);
-  const toolMat = M(0xc9c3d6, { metalness: .6, roughness: .4 });
-  for (let i = 0; i < 5; i++) {
-    const t = box(0.06, 0.9 - (i % 2) * 0.3, 0.12, i === 2 ? M(0xff7a5c) : toolMat, world, -8.85, 3.2, -1.1 + i * 0.65);
-    t.rotation.x = (i % 2 ? .25 : -.15);
-  }
-
   // hanging lamp
-  const lamp = new THREE.Group(); lamp.position.set(0.2, 6.2, -0.8); world.add(lamp);
+  const lamp = new THREE.Group(); lamp.position.set(-0.3, 6.2, -0.8); world.add(lamp);
   add(new THREE.CylinderGeometry(0.015, 0.015, 1.6, 4), M(0x111111), lamp, 0, 0.8, 0, false).position.y = 0.2;
   add(new THREE.ConeGeometry(0.55, 0.5, 10, 1, true), M(0x2c6b63, { side: THREE.DoubleSide }), lamp, 0, -0.8, 0, false);
   add(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffe0a8 }), lamp, 0, -1.05, 0, false);
@@ -360,7 +355,7 @@
 
   /* Car on lift — VR Car Mechanic */
   {
-    const g = new THREE.Group(); g.position.set(-2.0, 0, -2.0); g.rotation.y = 0.28; world.add(g);
+    const g = new THREE.Group(); g.position.set(-1.0, 0, -2.0); g.rotation.y = 0.28 - Math.PI / 4; world.add(g);
     const post = M(0xd9a441, { metalness: .3 });
     [-1.15].forEach(z => {
       box(0.3, 3.2, 0.3, post, g, 0, 1.6, z);
@@ -385,8 +380,7 @@
     box(0.06, 0.16, 0.34, E(0xfff1c8, 1.4), car, 1.71, 0.52, -0.5);
     box(0.06, 0.14, 0.34, E(0xff3355, 1.2), car, -1.71, 0.55, 0.5);
     box(0.06, 0.14, 0.34, E(0xff3355, 1.2), car, -1.71, 0.55, -0.5);
-    // spare tire leaning + floating wrench (VR grab)
-    const tire = cyl(0.42, 0.42, 0.28, 12, wheelMat, g, -2.3, 0.44, 1.2); tire.rotation.set(Math.PI / 2, 0, 0.25);
+    // floating wrench (VR grab)
     const wrench = new THREE.Group(); wrench.position.set(1.1, 2.2, 1.45); g.add(wrench);
     // combination wrench: open end + ring end, flat in its own XY plane
     const steel = new THREE.MeshStandardMaterial({ color: 0xd9d5e2, metalness: 0.85, roughness: 0.28 });
@@ -397,13 +391,13 @@
     const halo = add(new THREE.TorusGeometry(0.6, 0.02, 6, 48), E(0x4fe3cf, 2), wrench, 0, 0, 0, false);
     halo.rotation.x = Math.PI / 2;
     animators.push(t => { wrench.position.y = 2.2 + Math.sin(t * 1.6) * 0.12; wrench.rotation.y = t * 0.8; halo.scale.setScalar(1 + Math.sin(t * 3) * 0.06); });
-    reg("car", g, [-2.0, 3.8, -2.0], [-2.0, 1.4, -2.0], [2.3, 1.8, 5.0]);
+    reg("car", g, [-1.0, 3.8, -2.0], [-1.0, 1.4, -2.0], [2.3, 1.8, 5.0]);
   }
 
   /* TagRun — parkour boxes + RFID gate */
-  let timerTex;
+  let timerTex, tagrun = { sec: 0, cp: 0 };
   {
-    const g = new THREE.Group(); g.position.set(-6.1, 0, -3.1); g.rotation.y = 0.45; world.add(g);
+    const g = new THREE.Group(); g.position.set(-6.5, 0, -2.4); g.rotation.y = 0.45; world.add(g);
     const ply = M(0xc99a62), ply2 = M(0xa97a48);
     box(1.3, 0.9, 1.3, ply, g, 0.7, 0.45, -0.3);
     box(1.0, 1.6, 1.0, ply2, g, -0.7, 0.8, -0.7);
@@ -416,21 +410,71 @@
     box(0.18, 2.6, 0.18, gateMat, g, -1.1, 1.3, 2.0);
     box(0.18, 2.6, 0.18, gateMat, g, 1.1, 1.3, 2.0);
     box(2.4, 0.26, 0.26, gateMat, g, 0, 2.62, 2.0);
-    box(2.1, 0.05, 0.05, E(0x4fe3cf, 2.2), g, 0, 2.47, 2.0);
+    const gateBar = box(2.1, 0.05, 0.05, E(0x4fe3cf, 2.2), g, 0, 2.47, 2.0);
     box(0.05, 2.2, 0.05, E(0xffb45e, 1.8), g, -1.0, 1.25, 2.1);
     box(0.05, 2.2, 0.05, E(0xffb45e, 1.8), g, 1.0, 1.25, 2.1);
-    timerTex = canvasTex(512, 160, drawTimer.bind(null, 0));
+    timerTex = canvasTex(512, 160, drawTimer.bind(null, 0, 0));
     box(1.8, 0.62, 0.14, M(0x120d1c), g, 0, 3.1, 2.0);
     add(new THREE.PlaneGeometry(1.7, 0.53), new THREE.MeshBasicMaterial({ map: timerTex }), g, 0, 3.1, 2.08, false);
-    // RFID wristband
-    const band = add(new THREE.TorusGeometry(0.22, 0.06, 8, 20), E(0x4fe3cf, 1.3), g, 0, 1.25, 2.0);
-    const chip = box(0.14, 0.1, 0.05, M(0xffffff), g, 0, 1.03, 2.0);
-    animators.push(t => { band.rotation.y = t * 1.4; band.position.y = 1.25 + Math.sin(t * 2) * 0.1; chip.position.y = band.position.y - 0.22; chip.rotation.y = band.rotation.y; });
-    reg("tagrun", g, [-6.1, 3.9, -3.1], [-6.0, 1.6, -2.6], [2.8, 2.0, 5.2]);
+    // RFID checkpoint pads on the boxes; the gate is the last checkpoint
+    const pads = [[0.9, 0.915, -0.3], [1.6, 0.465, 0.9]].map(([x, y, z]) => {
+      const pad = box(0.5, 0.03, 0.5, E(0x4fe3cf, 0.3), g, x, y, z);
+      const ring = add(new THREE.RingGeometry(0.2, 0.26, 20), new THREE.MeshBasicMaterial({ color: 0x4fe3cf, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }), g, x, y + 0.03, z, false);
+      ring.rotation.x = -Math.PI / 2;
+      return { pad, ring };
+    });
+    // runner with a glowing wristband
+    const runner = new THREE.Group(); g.add(runner);
+    const skin = M(0xe0b08a), kit = M(0x2c6b63), dark = M(0x241c33);
+    box(0.26, 0.34, 0.16, kit, runner, 0, 0.62, 0);
+    add(new THREE.SphereGeometry(0.1, 8, 6), skin, runner, 0, 0.9, 0);
+    const legs = [-1, 1].map(s => {
+      const hip = new THREE.Group(); hip.position.set(s * 0.07, 0.45, 0); runner.add(hip);
+      box(0.09, 0.42, 0.1, dark, hip, 0, -0.21, 0);
+      return hip;
+    });
+    const arms = [-1, 1].map(s => {
+      const sh = new THREE.Group(); sh.position.set(s * 0.17, 0.76, 0); runner.add(sh);
+      box(0.07, 0.32, 0.08, skin, sh, 0, -0.16, 0);
+      return sh;
+    });
+    add(new THREE.TorusGeometry(0.05, 0.018, 6, 12), E(0x4fe3cf, 2), arms[1], 0, -0.26, 0, false).rotation.x = Math.PI / 2;
+    // route: [from, to, duration, jump height, checkpoint reached at the end]
+    const pts = [[2.0, 0, -1.6], [0.9, 0.93, -0.3], [1.6, 0.48, 0.9], [0, 0, 1.4], [0, 0, 2.8]];
+    const segs = [[0, 1, 1.1, 0.45, 0], [1, 2, 0.9, 0.35, 1], [2, 3, 0.8, 0.2, -1], [3, 4, 0.9, 0, 2]];
+    const runTime = segs.reduce((a, s) => a + s[2], 0), cycle = runTime + 2.6;
+    const cpTimes = []; // time at which each checkpoint is reached
+    segs.reduce((acc, s) => { acc += s[2]; if (s[4] >= 0) cpTimes[s[4]] = acc; return acc; }, 0);
+    animators.push(t => {
+      const lt = t % cycle, run = Math.min(lt, runTime);
+      let acc = 0, seg = segs[segs.length - 1], u = 1;
+      for (const s of segs) { if (run < acc + s[2]) { seg = s; u = (run - acc) / s[2]; break; } acc += s[2]; }
+      const a = pts[seg[0]], b = pts[seg[1]];
+      runner.position.set(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u + seg[3] * 4 * u * (1 - u), a[2] + (b[2] - a[2]) * u);
+      runner.rotation.y = Math.atan2(b[0] - a[0], b[2] - a[2]);
+      const moving = lt < runTime, airborne = seg[3] > 0;
+      const swing = moving ? Math.sin(t * 16) * (airborne ? 0.25 : 0.8) : 0;
+      legs[0].rotation.x = airborne && moving ? -0.7 : swing; legs[1].rotation.x = airborne && moving ? 0.3 : -swing;
+      arms[0].rotation.x = -swing; arms[1].rotation.x = moving ? swing : -1.2; // raises the wristband at the finish
+      runner.visible = lt < cycle - 0.4;
+      // checkpoints fire as the runner lands on them
+      tagrun.sec = run; tagrun.cp = cpTimes.filter(c => run >= c).length;
+      pads.forEach((p, i) => {
+        const since = lt - cpTimes[i];
+        const on = since >= 0 && since < 0.9;
+        p.pad.material.emissiveIntensity = on ? 2.2 - since * 2 : (since >= 0 && moving ? 0.9 : 0.3);
+        p.ring.material.opacity = on ? 0.9 * (1 - since / 0.9) : 0;
+        p.ring.scale.setScalar(1 + (on ? since * 2.2 : 0));
+      });
+      const fin = lt - runTime;
+      gateBar.material.emissiveIntensity = fin >= 0 ? 2.2 + Math.max(0, 3 * (1 - fin)) * (Math.sin(t * 30) > 0 ? 1 : 0.4) : 2.2;
+    });
+    reg("tagrun", g, [-6.5, 3.9, -2.4], [-6.4, 1.6, -1.9], [2.8, 2.0, 5.2]);
   }
-  function drawTimer(sec, c, w, h) {
+  function drawTimer(sec, cp, c, w, h) {
     c.fillStyle = "#0c0814"; c.fillRect(0, 0, w, h);
     c.font = "600 26px 'JetBrains Mono', monospace"; c.fillStyle = "#ffb45e"; c.fillText("TAGRUN · LANE 1", 20, 38);
+    c.textAlign = "right"; c.fillStyle = cp === 3 ? "#4fe3cf" : "#ffb45e"; c.fillText(cp === 3 ? "FINISH" : `CP ${cp}/3`, w - 20, 38); c.textAlign = "left";
     const m = Math.floor(sec / 60), s = Math.floor(sec % 60), cs = Math.floor((sec % 1) * 100);
     c.font = "700 84px 'JetBrains Mono', monospace"; c.fillStyle = "#4fe3cf";
     c.shadowColor = "#4fe3cf"; c.shadowBlur = 16;
@@ -495,7 +539,7 @@
 
   /* Construction + drone — FPT-AI */
   {
-    const g = new THREE.Group(); g.position.set(6.0, 0, 1.2); g.rotation.y = -0.35; world.add(g);
+    const g = new THREE.Group(); g.position.set(6.4, 0, 1.9); g.rotation.y = -0.35; world.add(g);
     const conc = M(0x9b93a8);
     box(2.8, 0.15, 2.8, M(0x6d6579), g, 0, 0.075, 0);
     [-1, 0, 1].forEach(x => [-1, 0, 1].forEach(z => box(0.16, 1.8, 0.16, conc, g, x, 1.0, z)));
@@ -547,12 +591,12 @@
       scanLine.material.opacity = 0.14 * (1 - ((t * 0.6) % 1));
       bim.material.opacity = 0.5 + Math.sin(t * 2) * 0.3;
     });
-    reg("fpt", g, [6.0, 6.1, 1.2], [6.0, 2.6, 1.2], [-2.2, 2.0, 6.3]);
+    reg("fpt", g, [6.4, 6.1, 1.9], [6.4, 2.6, 1.9], [-2.2, 2.0, 6.3]);
   }
 
   /* Stylised avatar of Jada — About */
   {
-    const g = new THREE.Group(); g.position.set(1.4, 0, 2.7); g.rotation.y = 0.12; world.add(g);
+    const g = new THREE.Group(); g.position.set(1.45, 0, 3.3); g.rotation.y = 0.12; world.add(g);
     const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
     const smooth = (geo, mat, p, x = 0, y = 0, z = 0) => add(geo, mat, p, x, y, z);
     let seed = 23;
@@ -561,7 +605,7 @@
     // platform
     cyl(0.75, 0.85, 0.16, 40, M(0x3b3050, { flatShading: false }), g, 0, 0.08, 0);
     const ring = add(new THREE.TorusGeometry(0.77, 0.03, 8, 64), E(0x4fe3cf, 1.8), g, 0, 0.17, 0, false); ring.rotation.x = Math.PI / 2;
-    const faceLight = new THREE.PointLight(0xffd9bd, 0.8, 4.5, 2); faceLight.position.set(1.9, 2.7, 4.4); world.add(faceLight);
+    const faceLight = new THREE.PointLight(0xffd9bd, 0.8, 4.5, 2); faceLight.position.set(1.95, 2.7, 5.0); world.add(faceLight);
 
     /* materials */
     const skin = new THREE.MeshPhysicalMaterial({ color: 0xf0b28e, roughness: 0.5, clearcoat: 0.12, clearcoatRoughness: 0.6, emissive: 0x4a1a0c, emissiveIntensity: 0.3, sheen: new THREE.Color(0x8a3a2a) });
@@ -864,12 +908,12 @@
       const b = (t % 3.9) < 0.14;
       lids.forEach(l => { l.rotation.x = b ? 0.55 : -0.72; });
     });
-    reg("about", g, [1.4, 3.25, 2.7], [1.4, 1.95, 2.7], [1.1, 0.9, 6.2]);
+    reg("about", g, [1.45, 3.25, 3.3], [1.45, 1.95, 3.3], [1.1, 0.9, 6.2]);
   }
 
   /* Smart mailbox — MailMate */
   {
-    const g = new THREE.Group(); g.position.set(-5.9, 0, 2.9); g.rotation.y = 0.5; world.add(g);
+    const g = new THREE.Group(); g.position.set(-6.4, 0, 3.5); g.rotation.y = 0.5; world.add(g);
     box(0.2, 1.1, 0.2, M(0x6b4a34), g, 0, 0.55, 0);
     const blue = M(0x3d6ef0, { roughness: .45, metalness: .2 });
     box(0.6, 0.5, 1.05, blue, g, 0, 1.35, 0);
@@ -901,7 +945,48 @@
       bub.material.opacity = cyc > 0.3 ? Math.min(1, (cyc - 0.3) * 6) : 0;
       bub.position.y = 2.55 + Math.sin(t * 2) * 0.05;
     });
-    reg("mail", g, [-5.9, 3.1, 2.9], [-5.9, 1.5, 2.9], [2.0, 1.3, 4.4]);
+    reg("mail", g, [-8, 3.1, 3.5], [-8, 1.5, 3.5], [2.0, 1.3, 4.4]);
+  }
+
+  /* Project board on the left wall — opens the projects overview */
+  {
+    const g = new THREE.Group(); g.position.set(-8.97, 3.4, 0.8); g.rotation.y = Math.PI / 2; world.add(g);
+    box(3.3, 2.1, 0.06, M(0xb88a5a, { roughness: .95 }), g, 0, 0, 0);
+    const trim = M(0x4a3b66);
+    box(3.5, 0.12, 0.12, trim, g, 0, 1.11, 0.02); box(3.5, 0.12, 0.12, trim, g, 0, -1.11, 0.02);
+    box(0.12, 2.1, 0.12, trim, g, -1.71, 0, 0.02); box(0.12, 2.1, 0.12, trim, g, 1.71, 0, 0.02);
+    const hex = c => parseInt(c.slice(1), 16);
+    PROJECT_ORDER.forEach((k, i) => {
+      const p = PROJECTS[k];
+      const tex = canvasTex(256, 320, (c, w, h) => {
+        c.fillStyle = "#f3ecdf"; c.fillRect(0, 0, w, h);
+        c.fillStyle = p.color; c.fillRect(0, 0, w, 64);
+        c.font = "600 22px 'JetBrains Mono', monospace"; c.fillStyle = "#1a1326"; c.fillText(`PROJECT · ${p.year}`, 16, 42);
+        c.font = "700 30px sans-serif"; c.fillStyle = "#1a1326";
+        let line = "", y = 112;
+        p.title.split(" ").forEach(word => {
+          if (c.measureText(line + word).width > w - 32 && line) { c.fillText(line.trim(), 16, y); line = ""; y += 36; }
+          line += word + " ";
+        });
+        c.fillText(line.trim(), 16, y);
+        c.font = "500 18px 'JetBrains Mono', monospace"; c.fillStyle = "#5a4d6e";
+        p.stack.slice(0, 3).forEach((s, j) => c.fillText("• " + s, 16, h - 84 + j * 26));
+      });
+      const x = -1.2 + i * 0.8, y = i % 2 ? -0.12 : 0.1;
+      const card = add(new THREE.PlaneGeometry(0.62, 0.78), new THREE.MeshStandardMaterial({ map: tex, roughness: .9 }), g, x, y, 0.04, false);
+      card.rotation.z = [0.05, -0.04, 0.03, -0.06][i];
+      add(new THREE.SphereGeometry(0.045, 8, 6), E(hex(p.color), 0.6), g, x, y + 0.34, 0.07, false);
+    });
+    // string linking the pins
+    const pinPts = PROJECT_ORDER.map((_, i) => new THREE.Vector3(-1.2 + i * 0.8, (i % 2 ? -0.12 : 0.1) + 0.34, 0.075));
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pinPts), new THREE.LineBasicMaterial({ color: 0xd84a4a })));
+    // header strip
+    const headTex = canvasTex(512, 64, (c, w, h) => {
+      c.fillStyle = "#241c33"; c.fillRect(0, 0, w, h);
+      c.font = "600 30px 'JetBrains Mono', monospace"; c.fillStyle = "#ffb45e"; c.textAlign = "center"; c.fillText("MY PROJECTS", w / 2, 43);
+    });
+    add(new THREE.PlaneGeometry(1.4, 0.18), new THREE.MeshBasicMaterial({ map: headTex }), g, 0, 0.8, 0.04, false);
+    reg("board", g, [-8.9, 4.75, 1], [-8.9, 3.4, 1], [4.5, 0.3, 0]);
   }
 
   /* Neon sign — Contact */
@@ -916,7 +1001,7 @@
       c.fillText("JG.", w / 2 + 10, 170);
       c.font = "500 34px 'JetBrains Mono', monospace";
       c.shadowColor = "#ffb45e"; c.shadowBlur = 18; c.fillStyle = "#ffd9a8";
-      c.fillText("let's build something", w / 2, 250);
+      c.fillText("let's build visions together", w / 2, 250);
     });
     const neon = add(new THREE.PlaneGeometry(2.9, 1.45), new THREE.MeshBasicMaterial({ map: neonTex, transparent: true }), g, 0, 0, 0.07, false);
     animators.push(t => { const f = (Math.sin(t * 13) > 0.97) ? 0.55 : 1; neon.material.opacity = f; neonLight.intensity = 1.3 * f; });
@@ -996,6 +1081,8 @@
     setHover(null);
     try { history.replaceState(null, "", "#" + k); } catch (_) {}
   }
+  // the project board opens the overview modal; everything else focuses the camera
+  function activate(k) { if (k === "board") { unfocus(); openModal(); } else focusOn(k); }
   function unfocus() {
     if (!current) return;
     if (noGL) { current = null; panel.classList.remove("open"); return; }
@@ -1013,7 +1100,7 @@
     b.className = "hs"; b.type = "button";
     b.innerHTML = `<span class="dot"></span><span class="lbl">${esc(VIEWS[k].label)}</span>`;
     b.setAttribute("aria-label", VIEWS[k].label);
-    b.onclick = () => focusOn(k);
+    b.onclick = () => activate(k);
     b.onmouseenter = () => setHover(k); b.onmouseleave = () => setHover(null);
     hsLayer.appendChild(b); hsEls[k] = b;
   });
@@ -1044,7 +1131,7 @@
   canvas.addEventListener("pointerup", e => {
     if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) return;
     const k = pick(e);
-    if (k) focusOn(k); else if (current) unfocus();
+    if (k) activate(k); else if (current) unfocus();
   });
 
   /* Resize */
@@ -1089,7 +1176,7 @@
 
     // timer screen
     timerAcc += dt;
-    if (timerAcc > 0.07) { timerAcc = 0; const sec = (t % 16) < 13 ? (t % 16) : 13; timerTex.userData.draw = drawTimer.bind(null, sec); drawTimer(sec, timerTex.userData.ctx, 512, 160); timerTex.needsUpdate = true; }
+    if (timerAcc > 0.07) { timerAcc = 0; const { sec, cp } = tagrun; timerTex.userData.draw = drawTimer.bind(null, sec, cp); drawTimer(sec, cp, timerTex.userData.ctx, 512, 160); timerTex.needsUpdate = true; }
 
     // dust drift
     if (!reduceMotion) {
@@ -1124,5 +1211,5 @@
 
   // deep link
   const h = (location.hash || "").slice(1);
-  if (VIEWS[h]) setTimeout(() => focusOn(h), 900);
+  if (VIEWS[h]) setTimeout(() => activate(h), 900);
 })();
