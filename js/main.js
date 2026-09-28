@@ -355,31 +355,80 @@
 
   /* Car on lift — VR Car Mechanic */
   {
-    const g = new THREE.Group(); g.position.set(-1.0, 0, -2.0); g.rotation.y = 0.28 - Math.PI / 4; world.add(g);
+    const g = new THREE.Group(); g.position.set(-1.4, 0, -2.0); g.rotation.y = 0.28 - Math.PI / 4; world.add(g);
     const post = M(0xd9a441, { metalness: .3 });
     [-1.15].forEach(z => {
       box(0.3, 3.2, 0.3, post, g, 0, 1.6, z);
       box(0.7, 0.08, 0.7, M(0x3a3044), g, 0, 0.04, z);
       box(1.6, 0.08, 0.1, M(0x555063, { metalness: .5 }), g, 0, 0.62, z * 0.72);
     });
+    // lift pads between the arm and the sill
+    [-0.7, 0.7].forEach(x => box(0.14, 0.2, 0.14, M(0x2a2533), g, x, 0.76, -0.83));
     const car = new THREE.Group(); car.position.y = 0.72; g.add(car);
     const paint = M(0xff6a4d, { roughness: .45, metalness: .25 });
-    box(3.4, 0.55, 1.55, paint, car, 0, 0.45, 0);
-    box(0.5, 0.2, 1.5, paint, car, 1.5, 0.78, 0).rotation.z = -0.25;
-    const cab = box(1.8, 0.55, 1.35, M(0x1c2440, { roughness: .15, metalness: .4 }), car, -0.25, 0.98, 0);
-    box(1.6, 0.08, 1.38, paint, car, -0.3, 1.28, 0);
-    // hood open
-    const hood = box(1.0, 0.06, 1.4, paint, car, 1.15, 1.05, 0); hood.rotation.z = 0.9; hood.position.set(0.95, 1.3, 0);
-    box(0.6, 0.25, 0.9, M(0x3b3b44, { metalness: .6 }), car, 1.2, 0.8, 0);
-    const wheelMat = M(0x17141c), rimMat = M(0xcfc8d8, { metalness: .7, roughness: .3 });
-    [[1.05, .8], [1.05, -.8], [-1.1, .8], [-1.1, -.8]].forEach(([x, z]) => {
-      const w = cyl(0.36, 0.36, 0.3, 12, wheelMat, car, x, 0.2, z); w.rotation.x = Math.PI / 2;
-      const r = cyl(0.18, 0.18, 0.32, 8, rimMat, car, x, 0.2, z); r.rotation.x = Math.PI / 2;
+    const glass = M(0x1c2440, { roughness: .15, metalness: .4 });
+    const trimM = M(0x1b1722, { roughness: .6 });
+    // body: low-poly side profile (front = +x) with wheel arches, extruded across the width
+    const HW = 0.78; // half width of the extrusion (bevel adds 0.06)
+    const prof = new THREE.Shape();
+    prof.moveTo(-1.72, 0.2);
+    prof.lineTo(-1.54, 0.2); prof.absarc(-1.1, 0.2, 0.44, Math.PI, 0, true);
+    prof.lineTo(0.61, 0.2); prof.absarc(1.05, 0.2, 0.44, Math.PI, 0, true);
+    prof.lineTo(1.68, 0.2); prof.lineTo(1.8, 0.3); prof.lineTo(1.78, 0.6);
+    prof.lineTo(1.55, 0.68); prof.lineTo(0.62, 0.74); // open engine bay
+    prof.lineTo(0.6, 0.86); prof.lineTo(0.05, 1.3); // windscreen
+    prof.lineTo(-1.0, 1.34); prof.lineTo(-1.55, 0.98); // roof + rear window
+    prof.lineTo(-1.78, 0.78); prof.lineTo(-1.76, 0.3); prof.lineTo(-1.72, 0.2);
+    const bodyGeo = new THREE.ExtrudeGeometry(prof, { depth: HW * 2, curveSegments: 4, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.05, bevelSegments: 1 });
+    bodyGeo.translate(0, 0, -HW);
+    add(bodyGeo, paint, car);
+    // side windows (one slab poking out on both sides) + pillar
+    const winShape = new THREE.Shape();
+    winShape.moveTo(0.5, 0.92); winShape.lineTo(0.03, 1.26); winShape.lineTo(-0.95, 1.29); winShape.lineTo(-1.42, 0.98); winShape.lineTo(0.5, 0.92);
+    const winGeo = new THREE.ExtrudeGeometry(winShape, { depth: HW * 2 + 0.14, bevelEnabled: false });
+    winGeo.translate(0, 0, -HW - 0.07);
+    add(winGeo, glass, car, 0, 0, 0, false);
+    box(0.05, 0.4, HW * 2 + 0.15, paint, car, -0.35, 1.12, 0).rotation.z = -0.1;
+    // windscreen + rear window laid on the slopes
+    const pane = (x1, y1, x2, y2) => {
+      const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), nx = -dy / len, ny = dx / len;
+      const p = box(len, 0.02, HW * 2 - 0.02, glass, car, (x1 + x2) / 2 + nx * 0.06, (y1 + y2) / 2 + ny * 0.06, 0);
+      p.rotation.z = Math.atan2(dy, dx); p.castShadow = false;
+    };
+    pane(0.6, 0.86, 0.05, 1.3); pane(-1.0, 1.34, -1.55, 0.98);
+    // door seam, handle and mirror per side
+    [-1, 1].forEach(s => {
+      const zs = s * (HW + 0.061);
+      box(0.015, 0.6, 0.004, trimM, car, -0.35, 0.55, zs);
+      box(0.16, 0.035, 0.03, trimM, car, 0.05, 0.78, zs + s * 0.01);
+      box(0.12, 0.1, 0.18, paint, car, 0.5, 1.0, s * (HW + 0.14));
     });
-    box(0.06, 0.16, 0.34, E(0xfff1c8, 1.4), car, 1.71, 0.52, 0.5);
-    box(0.06, 0.16, 0.34, E(0xfff1c8, 1.4), car, 1.71, 0.52, -0.5);
-    box(0.06, 0.14, 0.34, E(0xff3355, 1.2), car, -1.71, 0.55, 0.5);
-    box(0.06, 0.14, 0.34, E(0xff3355, 1.2), car, -1.71, 0.55, -0.5);
+    // bumpers, grille, lights
+    box(0.14, 0.16, HW * 2 + 0.1, trimM, car, 1.84, 0.28, 0);
+    box(0.14, 0.16, HW * 2 + 0.1, trimM, car, -1.84, 0.28, 0);
+    box(0.04, 0.14, 0.8, M(0x0d0a12), car, 1.86, 0.46, 0);
+    [0.5, -0.5].forEach(z => {
+      box(0.05, 0.08, 0.38, E(0xfff1c8, 1.6), car, 1.83, 0.6, z);
+      box(0.05, 0.1, 0.34, E(0xff3355, 1.3), car, -1.84, 0.72, z);
+    });
+    // engine bay under the open hood
+    const metal = M(0x3b3b44, { metalness: .6, roughness: .4 });
+    box(0.55, 0.2, 0.7, metal, car, 1.1, 0.82, 0);
+    cyl(0.16, 0.16, 0.08, 8, M(0x222028), car, 1.2, 0.96, -0.1);
+    box(0.22, 0.18, 0.16, trimM, car, 0.85, 0.84, 0.52);
+    // hood hinged at the cowl, held by a prop rod
+    const hood = new THREE.Group(); hood.position.set(0.61, 0.76, 0); hood.rotation.z = 0.95; car.add(hood);
+    box(1.08, 0.05, HW * 2 + 0.1, paint, hood, 0.54, 0.02, 0);
+    box(0.02, 0.8, 0.02, M(0xc9c3d6, { metalness: .7 }), car, 1.28, 1.06, 0.55).rotation.z = 0.575;
+    // wheels: tyre + rim with a spoke cross
+    const wheelMat = M(0x17141c), rimMat = M(0xcfc8d8, { metalness: .7, roughness: .3 });
+    [[1.05, 1], [1.05, -1], [-1.1, 1], [-1.1, -1]].forEach(([x, s]) => {
+      const w = cyl(0.36, 0.36, 0.26, 12, wheelMat, car, x, 0.2, s * 0.72); w.rotation.x = Math.PI / 2;
+      const r = cyl(0.22, 0.22, 0.28, 8, rimMat, car, x, 0.2, s * 0.72); r.rotation.x = Math.PI / 2;
+      const zf = s * 0.87;
+      box(0.36, 0.05, 0.02, trimM, car, x, 0.2, zf).rotation.z = Math.PI / 4;
+      box(0.36, 0.05, 0.02, trimM, car, x, 0.2, zf).rotation.z = -Math.PI / 4;
+    });
     // floating wrench (VR grab)
     const wrench = new THREE.Group(); wrench.position.set(1.1, 2.2, 1.45); g.add(wrench);
     // combination wrench: open end + ring end, flat in its own XY plane
@@ -391,13 +440,13 @@
     const halo = add(new THREE.TorusGeometry(0.6, 0.02, 6, 48), E(0x4fe3cf, 2), wrench, 0, 0, 0, false);
     halo.rotation.x = Math.PI / 2;
     animators.push(t => { wrench.position.y = 2.2 + Math.sin(t * 1.6) * 0.12; wrench.rotation.y = t * 0.8; halo.scale.setScalar(1 + Math.sin(t * 3) * 0.06); });
-    reg("car", g, [-1.0, 3.8, -2.0], [-1.0, 1.4, -2.0], [2.3, 1.8, 5.0]);
+    reg("car", g, [-1.4, 3.8, -2.0], [-1.4, 1.4, -2.0], [2.3, 1.8, 5.0]);
   }
 
   /* TagRun — parkour boxes + RFID gate */
   let timerTex, tagrun = { sec: 0, cp: 0 };
   {
-    const g = new THREE.Group(); g.position.set(-6.5, 0, -2.4); g.rotation.y = 0.45; world.add(g);
+    const g = new THREE.Group(); g.position.set(-6.5, 0, -1.8); g.rotation.y = 0.45; world.add(g);
     const ply = M(0xc99a62), ply2 = M(0xa97a48);
     box(1.3, 0.9, 1.3, ply, g, 0.7, 0.45, -0.3);
     box(1.0, 1.6, 1.0, ply2, g, -0.7, 0.8, -0.7);
@@ -407,15 +456,16 @@
     box(0.12, 1.7, 0.12, M(0x6d5a8f), g, 0.9, 0.85, 0.2);
     // finish gate
     const gateMat = M(0x241c33);
-    box(0.18, 2.6, 0.18, gateMat, g, -1.1, 1.3, 2.0);
-    box(0.18, 2.6, 0.18, gateMat, g, 1.1, 1.3, 2.0);
-    box(2.4, 0.26, 0.26, gateMat, g, 0, 2.62, 2.0);
-    const gateBar = box(2.1, 0.05, 0.05, E(0x4fe3cf, 2.2), g, 0, 2.47, 2.0);
-    box(0.05, 2.2, 0.05, E(0xffb45e, 1.8), g, -1.0, 1.25, 2.1);
-    box(0.05, 2.2, 0.05, E(0xffb45e, 1.8), g, 1.0, 1.25, 2.1);
+    const gate = new THREE.Group(); gate.position.set(0, 0, 2.0); gate.scale.setScalar(0.7); g.add(gate);
+    box(0.18, 2.6, 0.18, gateMat, gate, -1.1, 1.3, 0);
+    box(0.18, 2.6, 0.18, gateMat, gate, 1.1, 1.3, 0);
+    box(2.4, 0.26, 0.26, gateMat, gate, 0, 2.62, 0);
+    const gateBar = box(2.1, 0.05, 0.05, E(0x4fe3cf, 2.2), gate, 0, 2.47, 0);
+    box(0.05, 2.2, 0.05, E(0xffb45e, 1.8), gate, -1.0, 1.25, 0.1);
+    box(0.05, 2.2, 0.05, E(0xffb45e, 1.8), gate, 1.0, 1.25, 0.1);
     timerTex = canvasTex(512, 160, drawTimer.bind(null, 0, 0));
-    box(1.8, 0.62, 0.14, M(0x120d1c), g, 0, 3.1, 2.0);
-    add(new THREE.PlaneGeometry(1.7, 0.53), new THREE.MeshBasicMaterial({ map: timerTex }), g, 0, 3.1, 2.08, false);
+    box(1.8, 0.62, 0.14, M(0x120d1c), gate, 0, 3.1, 0);
+    add(new THREE.PlaneGeometry(1.7, 0.53), new THREE.MeshBasicMaterial({ map: timerTex }), gate, 0, 3.1, 0.08, false);
     // RFID checkpoint pads on the boxes; the gate is the last checkpoint
     const pads = [[0.9, 0.915, -0.3], [1.6, 0.465, 0.9]].map(([x, y, z]) => {
       const pad = box(0.5, 0.03, 0.5, E(0x4fe3cf, 0.3), g, x, y, z);
@@ -469,7 +519,7 @@
       const fin = lt - runTime;
       gateBar.material.emissiveIntensity = fin >= 0 ? 2.2 + Math.max(0, 3 * (1 - fin)) * (Math.sin(t * 30) > 0 ? 1 : 0.4) : 2.2;
     });
-    reg("tagrun", g, [-6.5, 3.9, -2.4], [-6.4, 1.6, -1.9], [2.8, 2.0, 5.2]);
+    reg("tagrun", g, [-6.5, 3.2, -1.8], [-6.4, 1.6, -1.3], [2.8, 2.0, 5.2]);
   }
   function drawTimer(sec, cp, c, w, h) {
     c.fillStyle = "#0c0814"; c.fillRect(0, 0, w, h);
@@ -913,7 +963,7 @@
 
   /* Smart mailbox — MailMate */
   {
-    const g = new THREE.Group(); g.position.set(-6.4, 0, 3.5); g.rotation.y = 0.5; world.add(g);
+    const g = new THREE.Group(); g.position.set(-6.4, 0, 4.1); g.rotation.y = 0.5; world.add(g);
     box(0.2, 1.1, 0.2, M(0x6b4a34), g, 0, 0.55, 0);
     const blue = M(0x3d6ef0, { roughness: .45, metalness: .2 });
     box(0.6, 0.5, 1.05, blue, g, 0, 1.35, 0);
@@ -945,7 +995,7 @@
       bub.material.opacity = cyc > 0.3 ? Math.min(1, (cyc - 0.3) * 6) : 0;
       bub.position.y = 2.55 + Math.sin(t * 2) * 0.05;
     });
-    reg("mail", g, [-8, 3.1, 3.5], [-8, 1.5, 3.5], [2.0, 1.3, 4.4]);
+    reg("mail", g, [-6.4, 3.1, 4.1], [-6.4, 1.5, 4.1], [2.0, 1.3, 4.4]);
   }
 
   /* Project board on the left wall — opens the projects overview */
