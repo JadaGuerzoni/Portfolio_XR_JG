@@ -107,6 +107,7 @@ body.focused .hs { opacity: 0; pointer-events: none; }
 #panel.open { transform: none; }
 #panel { transition: transform .55s cubic-bezier(.2,.8,.2,1), width .5s cubic-bezier(.2,.8,.2,1); }
 #panel.wide { width: min(700px, calc(100% - 32px)); }
+#panel.wide .nav-row { display: none; } /* case study has its own project prev/next */
 .back-link { background: none; border: 0; padding: 0; margin: 4px 0 2px; cursor: pointer; color: var(--muted); font-size: 13px; }
 .back-link:hover { color: var(--text); }
 .meta { display: grid; grid-template-columns: auto auto 1fr; gap: 10px 26px; padding: 16px 0 18px; margin-bottom: 6px; border-block: 1px solid var(--line); }
