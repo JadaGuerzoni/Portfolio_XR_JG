@@ -1080,6 +1080,16 @@
   const camPos = new THREE.Vector3(), camTarget = new THREE.Vector3();
   let tween = null;
   const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
+  // drag to slide the camera over the room / pinch or wheel to zoom (home view only)
+  const orbit = { pan: new THREE.Vector3(), tPan: new THREE.Vector3(), zoom: 1, tZoom: 1 };
+  const clampOrbit = () => {
+    orbit.tPan.x = THREE.MathUtils.clamp(orbit.tPan.x, -6.5, 6.5);
+    orbit.tPan.z = THREE.MathUtils.clamp(orbit.tPan.z, -4, 4);
+    orbit.tZoom = THREE.MathUtils.clamp(orbit.tZoom, 0.55, 1.35);
+  };
+  const panRight = new THREE.Vector3(), panFwd = new THREE.Vector3();
+  const touchScreen = matchMedia("(pointer: coarse)");
+  const canPan = () => touchScreen.matches && innerWidth <= 1750; // phones/tablets only; laptops and desktops keep the fixed view
 
   function homeView() {
     const a = innerWidth / innerHeight;
@@ -1172,14 +1182,51 @@
     const hit = ray.intersectObjects(pickables, false)[0];
     return hit ? hit.object.userData.key : null;
   }
-  let downAt = null;
+  let downAt = null, dragging = false, pinchD = 0;
+  const pointers = new Map();
+  const pinchDist = () => { const [a, b] = [...pointers.values()]; return Math.hypot(a.x - b.x, a.y - b.y); };
   canvas.addEventListener("pointermove", e => {
-    mouse.x = e.clientX / innerWidth - .5; mouse.y = e.clientY / innerHeight - .5;
+    if (e.pointerType === "mouse") { mouse.x = e.clientX / innerWidth - .5; mouse.y = e.clientY / innerHeight - .5; }
+    const prev = pointers.get(e.pointerId);
+    if (prev && !current && canPan()) {
+      if (pointers.size === 2) {
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        const d = pinchDist(); orbit.tZoom *= pinchD / d; pinchD = d; clampOrbit();
+        return;
+      }
+      if (!dragging && downAt && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) { dragging = true; setHover(null); }
+      if (dragging) {
+        // move the camera so the room follows the finger, along the floor plane
+        const perPx = 2 * camera.position.distanceTo(camTarget) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / innerHeight;
+        camera.getWorldDirection(panFwd); panFwd.y = 0; panFwd.normalize();
+        panRight.crossVectors(panFwd, camera.up).normalize();
+        orbit.tPan.addScaledVector(panRight, -(e.clientX - prev.x) * perPx).addScaledVector(panFwd, (e.clientY - prev.y) * perPx * 1.6);
+        clampOrbit();
+        canvas.style.cursor = "grabbing";
+      }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (dragging) return;
+    }
     if (e.pointerType === "mouse" && !current) setHover(pick(e));
   });
-  canvas.addEventListener("pointerdown", e => { downAt = [e.clientX, e.clientY]; });
+  canvas.addEventListener("pointerdown", e => {
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    if (pointers.size === 2) { pinchD = pinchDist(); downAt = null; dragging = true; }
+    else { downAt = [e.clientX, e.clientY]; dragging = false; }
+  });
+  const endPointer = e => {
+    pointers.delete(e.pointerId);
+    if (!pointers.size) { dragging = false; canvas.style.cursor = "default"; }
+  };
+  canvas.addEventListener("pointercancel", endPointer);
+  canvas.addEventListener("wheel", e => {
+    if (current || !canPan()) return;
+    e.preventDefault(); orbit.tZoom *= 1 + Math.sign(e.deltaY) * 0.08; clampOrbit();
+  }, { passive: false });
   canvas.addEventListener("pointerup", e => {
-    if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) return;
+    const wasDrag = dragging; endPointer(e);
+    if (wasDrag || !downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 8) return;
     const k = pick(e);
     if (k) activate(k); else if (current) unfocus();
   });
@@ -1201,7 +1248,7 @@
 
   /* Loop */
   const clock = new THREE.Clock();
-  const tmpV = new THREE.Vector3();
+  const tmpV = new THREE.Vector3(), sph = new THREE.Spherical();
   let timerAcc = 0, first = true;
   function frame() {
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
@@ -1213,8 +1260,13 @@
     // soft parallax
     mouse.sx += (mouse.x - mouse.sx) * 0.05; mouse.sy += (mouse.y - mouse.sy) * 0.05;
     const par = current ? 0.25 : 1.2;
-    camera.position.copy(camPos).add(tmpV.set(mouse.sx * par * 1.6, -mouse.sy * par * 0.8, 0));
-    camera.lookAt(camTarget);
+    if (current || !canPan()) { orbit.tPan.set(0, 0, 0); orbit.tZoom = 1; }
+    const oe = reduceMotion ? 1 : 0.14;
+    orbit.pan.lerp(orbit.tPan, oe); orbit.zoom += (orbit.tZoom - orbit.zoom) * oe;
+    sph.setFromVector3(tmpV.copy(camPos).sub(camTarget)); sph.radius *= orbit.zoom;
+    scene.fog.near = 28 * orbit.zoom; scene.fog.far = 60 * orbit.zoom; // keep the room equally bright when zoomed out
+    camera.position.setFromSpherical(sph).add(camTarget).add(orbit.pan).add(tmpV.set(mouse.sx * par * 1.6, -mouse.sy * par * 0.8, 0));
+    camera.lookAt(tmpV.copy(camTarget).add(orbit.pan));
 
     if (!reduceMotion) animators.forEach(f => f(t, dt));
 
@@ -1247,7 +1299,10 @@
       el.style.visibility = vis ? "visible" : "hidden";
     });
 
-    if (first) { first = false; setTimeout(() => $("loader").classList.add("done"), 250); }
+    if (first) {
+      first = false; setTimeout(() => $("loader").classList.add("done"), 250);
+      if (canPan()) setTimeout(() => toast("Drag to move around · pinch to zoom"), 2600);
+    }
     requestAnimationFrame(frame);
   }
   // re-render canvas textures once fonts are ready so they use the right faces
