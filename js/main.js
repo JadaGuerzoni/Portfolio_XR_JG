@@ -986,7 +986,7 @@
 
   /* Smart mailbox — MailMate */
   {
-    const g = new THREE.Group(); g.position.set(-0.6, 0, 3.6); g.rotation.y = 0.25; world.add(g);
+    const g = new THREE.Group(); g.position.set(-1.3, 0, 3.6); g.rotation.y = 0.25; world.add(g);
     box(0.2, 1.1, 0.2, M(0x6b4a34), g, 0, 0.55, 0);
     const blue = M(0x3d6ef0, { roughness: .45, metalness: .2 });
     box(0.6, 0.5, 1.05, blue, g, 0, 1.35, 0);
@@ -1018,7 +1018,7 @@
       bub.material.opacity = cyc > 0.3 ? Math.min(1, (cyc - 0.3) * 6) : 0;
       bub.position.y = 2.55 + Math.sin(t * 2) * 0.05;
     });
-    reg("mail", g, [-0.6, 3.1, 3.6], [-0.6, 1.5, 3.6], [-0.9, 1.4, 4.2]);
+    reg("mail", g, [-1.3, 3.1, 3.6], [-1.3, 1.5, 3.6], [-0.9, 1.4, 4.2]);
   }
 
   /* Miniature diorama on a turntable plinth — DAE Rowhomes Tokyo */
