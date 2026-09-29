@@ -57,10 +57,25 @@
       extra: { href: "https://www.instructables.com/Smart-Mailbox-Howest-Mct/", label: "Build guide on Instructables ↗" },
       color: "#6f9bff",
       icon: '<path d="M4 11a4 4 0 018 0v9H4z" /><path d="M8 7h8a4 4 0 014 4v9h-8" /><path d="M16 11V5h3" />'
+    },
+    tokyo: {
+      title: "DAE Rowhomes – Tokyo", short: "Tokyo Rowhomes", year: "2026", label: "Tokyo Rowhomes · 3D",
+      text: "A detailed 3D diorama of a Japanese rowhouse on a Tokyo side street, complete with a rusty kei truck, a shop awning and all the small details that make the street feel lived in.",
+      tags: ["Blender", "3D modelling", "Texturing", "Environment design", "Sketchfab"],
+      type: "3D model", stack: ["Blender", "3D modelling", "Texturing", "Sketchfab"],
+      overview: "DAE Rowhomes – Tokyo is a 3D environment piece inspired by the narrow rowhouses found in Tokyo's residential streets. The two-storey house combines a timber frame, a balcony, a garage shutter and a shop entrance with a red awning, set on a small piece of street with a kei truck, traffic cones and road markings.",
+      sections: [
+        { h: "What's in the scene", list: ["Two-storey rowhouse with timber frame, balcony and corrugated awning", "Garage with a roller shutter and a shop entrance with a red awning", "Weathered kei truck, traffic cones and a utility box on the pavement", "Street with road markings, drain grates and a decorated manhole cover"] },
+        { h: "Design focus", p: "The goal was storytelling through detail: rust, stains and small props give the scene character, while the model stays light enough to run smoothly in the browser." }
+      ],
+      sketchfab: "b1c9e6922f3347b1a9b2b0ea7a3b9f66",
+      extra: { href: "https://sketchfab.com/3d-models/dae-rowhomes-tokyo-b1c9e6922f3347b1a9b2b0ea7a3b9f66", label: "Open on Sketchfab ↗" },
+      color: "#ff8fb1",
+      icon: '<path d="M3 11l9-6 9 6" /><path d="M5 10v10h14V10" /><path d="M5 14h14" /><path d="M9 20v-4h4v4" />'
     }
   };
   const IMG = window.IMG || {};
-  const PROJECT_ORDER = ["fpt", "car", "tagrun", "mail"];
+  const PROJECT_ORDER = ["fpt", "car", "tagrun", "mail", "tokyo"];
 
   const SKILLS = [
     ["XR & Game Development", ["Unity", "Meta developer", "OpenXR", "XR Interaction Toolkit", "Blender", "VR Development", "UI for VR"]],
@@ -81,13 +96,20 @@
       label: 'About me',
       eyebrow: 'Avatar · About',
       html: () => `
-        <h2>Hi, I'm Jada</h2>
+        <div class="intro">
+          <figure class="portrait"><img src="assets/img/jada.jpg" alt="Portrait of Jada Guerzoni" width="440" height="550"></figure>
+          <div class="intro-txt">
+            <h2>Hi, I'm Jada</h2>
+            <span class="role">3D &amp; XR Developer</span>
+            <span class="loc">Student MCT XR</span>
+          </div>
+        </div>
         <p>I'm passionate about building interactive experiences that bring technology and creativity together. As an XR student, I enjoy exploring new ideas, solving challenges, and turning concepts into immersive applications.</p>
         <p>Every project is an opportunity to learn, improve, and create something meaningful.</p>
         <div class="facts">
           <div class="fact"><b>3D &amp; XR</b><span>Developer</span></div>
           <div class="fact"><b>MCT XR</b><span>Student</span></div>
-          <div class="fact"><b>4</b><span>Featured projects</span></div>
+          <div class="fact"><b>${PROJECT_ORDER.length}</b><span>Featured projects</span></div>
           <div class="fact"><b>8</b><span>Skill domains</span></div>
         </div>
         <div class="cta-row">
@@ -138,7 +160,8 @@
           <div><small>Type</small><b>${esc(p.type)}</b></div>
           <div><small>Stack</small>${chips(p.stack)}</div>
         </div>
-        ${IMG[k] ? `<figure class="figure${k === "fpt" ? " square" : ""}"><img src="${IMG[k].src}" alt="${esc(IMG[k].alt)}"></figure>` : ""}
+        ${p.sketchfab ? `<figure class="figure model3d"><iframe title="${esc(p.title)} – interactive 3D model" src="https://sketchfab.com/models/${p.sketchfab}/embed?autostart=1&autospin=0.25&ui_theme=dark&ui_infos=0&ui_hint=2&ui_settings=0&ui_help=0&ui_vr=0&ui_inspector=0&ui_annotations=0&ui_stop=0&dnt=1" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen loading="lazy"></iframe><figcaption>Drag to rotate · scroll to zoom</figcaption></figure>`
+          : IMG[k] ? `<figure class="figure${k === "fpt" ? " square" : ""}"><img src="${IMG[k].src}" alt="${esc(IMG[k].alt)}"></figure>` : ""}
         <h3>Overview</h3>
         <p>${esc(p.overview)}</p>
         ${p.sections.map(sec => `<h3>${esc(sec.h)}</h3>` +
@@ -151,7 +174,7 @@
     };
   });
   VIEWS.board = { label: 'All projects' }; // opens the projects overview instead of a panel
-  const TOUR = ["about", "fpt", "car", "tagrun", "mail", "skills", "contact"];
+  const TOUR = ["about", "fpt", "car", "tagrun", "mail", "tokyo", "skills", "contact"];
 
   /* ---------------- UI helpers ---------------- */
   const $ = id => document.getElementById(id);
@@ -963,7 +986,7 @@
 
   /* Smart mailbox — MailMate */
   {
-    const g = new THREE.Group(); g.position.set(-6.4, 0, 4.1); g.rotation.y = 0.5; world.add(g);
+    const g = new THREE.Group(); g.position.set(-0.6, 0, 3.6); g.rotation.y = 0.25; world.add(g);
     box(0.2, 1.1, 0.2, M(0x6b4a34), g, 0, 0.55, 0);
     const blue = M(0x3d6ef0, { roughness: .45, metalness: .2 });
     box(0.6, 0.5, 1.05, blue, g, 0, 1.35, 0);
@@ -995,7 +1018,143 @@
       bub.material.opacity = cyc > 0.3 ? Math.min(1, (cyc - 0.3) * 6) : 0;
       bub.position.y = 2.55 + Math.sin(t * 2) * 0.05;
     });
-    reg("mail", g, [-6.4, 3.1, 4.1], [-6.4, 1.5, 4.1], [2.0, 1.3, 4.4]);
+    reg("mail", g, [-0.6, 3.1, 3.6], [-0.6, 1.5, 3.6], [-0.9, 1.4, 4.2]);
+  }
+
+  /* Miniature diorama on a turntable plinth — DAE Rowhomes Tokyo */
+  {
+    const g = new THREE.Group(); g.position.set(-6.3, 0, 3.9); g.rotation.y = 0.35; world.add(g);
+    // plinth with a glowing sakura-pink rim, like a museum exhibit
+    cyl(1.5, 1.6, 0.5, 32, M(0x2b2238, { flatShading: false }), g, 0, 0.25, 0);
+    cyl(1.52, 1.52, 0.06, 32, M(0x3d2f57, { flatShading: false }), g, 0, 0.53, 0);
+    const rim = add(new THREE.TorusGeometry(1.53, 0.018, 6, 64), E(0xff8fb1, 1.6), g, 0, 0.565, 0, false);
+    rim.rotation.x = Math.PI / 2;
+    const plaqueTex = canvasTex(512, 128, (c, w, h) => {
+      c.fillStyle = "#17111f"; c.fillRect(0, 0, w, h);
+      c.strokeStyle = "#ff8fb1"; c.lineWidth = 4; c.strokeRect(6, 6, w - 12, h - 12);
+      c.textAlign = "center"; c.fillStyle = "#ffc6d8"; c.font = "600 40px 'Fraunces', Georgia, serif"; c.fillText("東京 · Tokyo Rowhomes", w / 2, 62);
+      c.fillStyle = "#bdb2c9"; c.font = "500 20px 'JetBrains Mono', monospace"; c.fillText("3D MODEL · BLENDER · 2026", w / 2, 98);
+    });
+    const plaque = add(new THREE.PlaneGeometry(0.9, 0.225), new THREE.MeshBasicMaterial({ map: plaqueTex }), g, 0, 0.27, 1.585, false);
+    plaque.rotation.x = -0.06;
+
+    // the diorama itself spins slowly on the turntable (front = +z)
+    const tt = new THREE.Group(); tt.position.y = 0.59; g.add(tt);
+    const d = new THREE.Group(); d.scale.setScalar(1.18); tt.add(d);
+    const asphalt = M(0x3a3740), concrete = M(0x9a969c), timber = M(0x4a3226), plaster = M(0xcfc2b3), white = M(0xf2efe8);
+    box(1.8, 0.1, 1.8, asphalt, d, 0, 0.05, 0);
+    box(1.8, 0.02, 1.8, M(0x2a2533), d, 0, -0.005, 0); // dark edge under the street
+    // road markings, manhole and drain grates
+    [[-0.5, 0.35], [0.5, 0.35]].forEach(([x, w]) => box(w, 0.005, 0.03, white, d, x, 0.102, 0.42));
+    const diamond = add(new THREE.TorusGeometry(0.09, 0.012, 3, 4), white, d, -0.05, 0.103, 0.7, false); diamond.rotation.x = -Math.PI / 2;
+    cyl(0.085, 0.085, 0.006, 16, M(0xd9a441, { metalness: .5 }), d, 0.45, 0.103, 0.72);
+    [-0.25, 0.1].forEach(x => box(0.14, 0.006, 0.06, M(0x6b6570, { metalness: .5 }), d, x, 0.103, 0.3));
+    // pavement
+    box(1.3, 0.06, 0.62, concrete, d, 0, 0.13, -0.08);
+    box(1.3, 0.02, 0.03, M(0xb4b0b6), d, 0, 0.16, 0.225);
+
+    // rowhouse: plaster walls with a dark timber frame
+    const H = new THREE.Group(); H.position.set(0, 0.16, -0.62); d.add(H);
+    box(1.1, 1.12, 0.5, plaster, H, 0, 0.56, 0);
+    [-0.56, 0.56].forEach(x => box(0.05, 1.16, 0.05, timber, H, x, 0.58, 0.25));
+    box(0.04, 0.56, 0.04, timber, H, 0.02, 0.28, 0.25);
+    box(1.16, 0.05, 0.05, timber, H, 0, 0.58, 0.26);
+    box(1.16, 0.05, 0.05, timber, H, 0, 1.14, 0.26);
+    box(1.2, 0.06, 0.56, M(0x5b4a44), H, 0, 1.17, 0);
+    box(0.2, 0.12, 0.14, M(0xd8d4cc), H, -0.3, 1.26, -0.1); // AC unit on the roof
+    // garage with a roller shutter
+    const shutterTex = canvasTex(128, 128, (c, w, h) => {
+      c.fillStyle = "#8d8a90"; c.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += 8) { c.fillStyle = "rgba(0,0,0,.28)"; c.fillRect(0, y, w, 2); c.fillStyle = "rgba(255,255,255,.12)"; c.fillRect(0, y + 2, w, 1); }
+      c.fillStyle = "rgba(120,60,30,.35)"; c.fillRect(0, h - 22, w, 22); // rust at the bottom
+    });
+    add(new THREE.PlaneGeometry(0.48, 0.4), new THREE.MeshStandardMaterial({ map: shutterTex, roughness: .6, metalness: .3 }), H, -0.27, 0.34, 0.253, false);
+    add(new THREE.PlaneGeometry(0.48, 0.12), M(0x1a1620), H, -0.27, 0.07, 0.253, false); // half-open gap
+    // shop entrance: lattice door, red awning and a paper lantern
+    const doorTex = canvasTex(64, 128, (c, w, h) => {
+      c.fillStyle = "#ffcf8a"; c.fillRect(0, 0, w, h);
+      c.strokeStyle = "#4a3226"; c.lineWidth = 5; c.strokeRect(0, 0, w, h);
+      c.lineWidth = 2; for (let x = 8; x < w; x += 8) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h * .7); c.stroke(); }
+      c.fillStyle = "#4a3226"; c.fillRect(0, h * .7, w, h * .3);
+    });
+    add(new THREE.PlaneGeometry(0.28, 0.4), new THREE.MeshStandardMaterial({ map: doorTex, emissive: 0xffb060, emissiveIntensity: .35, emissiveMap: doorTex }), H, 0.29, 0.2, 0.253, false);
+    const awningTex = canvasTex(256, 96, (c, w, h) => {
+      c.fillStyle = "#c8453d"; c.fillRect(0, 0, w, h);
+      c.fillStyle = "rgba(60,10,10,.35)"; for (let x = 0; x < w; x += 14) c.fillRect(x, 0, 3, h * (.3 + Math.random() * .5)); // weathered streaks
+      c.fillStyle = "#fff4ea"; c.font = "700 30px sans-serif"; c.fillText("お誕生日", 18, 40); c.fillText("おめでとう", 96, 78);
+    });
+    const awning = add(new THREE.BoxGeometry(0.5, 0.16, 0.14), [M(0xa8362f), M(0xa8362f), M(0xa8362f), M(0xa8362f), new THREE.MeshStandardMaterial({ map: awningTex, roughness: .8 }), M(0xa8362f)], H, 0.29, 0.5, 0.32);
+    awning.rotation.x = 0.12;
+    const lantern = add(new THREE.SphereGeometry(0.045, 12, 8), E(0xff5a3c, 1.4), H, 0.5, 0.36, 0.33, false); lantern.scale.y = 1.35;
+    box(0.05, 0.012, 0.05, M(0x1a1620), H, 0.5, 0.425, 0.33);
+    // upper floor: warm lit window, balcony and a corrugated awning
+    add(new THREE.PlaneGeometry(0.62, 0.34), E(0xffc27a, 0.75), H, 0, 0.84, 0.253, false);
+    box(0.66, 0.03, 0.03, timber, H, 0, 1.02, 0.26); box(0.66, 0.03, 0.03, timber, H, 0, 0.66, 0.26);
+    box(0.02, 0.36, 0.03, timber, H, 0, 0.84, 0.26);
+    box(0.74, 0.03, 0.14, timber, H, 0, 0.66, 0.32);
+    box(0.74, 0.02, 0.02, timber, H, 0, 0.8, 0.385);
+    for (let i = 0; i <= 12; i++) box(0.012, 0.13, 0.012, timber, H, -0.36 + i * 0.06, 0.73, 0.385);
+    const tin = box(0.82, 0.02, 0.2, M(0x9fb2c0, { metalness: .5, roughness: .4 }), H, 0, 1.08, 0.33); tin.rotation.x = 0.18;
+    // kei truck (white, a bit rusty) parked in front of the garage
+    const truck = new THREE.Group(); truck.position.set(-0.24, 0.16, -0.02); truck.rotation.y = 0.12; d.add(truck);
+    const kei = M(0xd8d6cf, { roughness: .6 }), rust = M(0x8a5a3a);
+    box(0.24, 0.16, 0.14, kei, truck, 0, 0.14, 0.12);
+    box(0.25, 0.05, 0.36, kei, truck, 0, 0.07, 0.0);
+    box(0.24, 0.05, 0.22, rust, truck, 0, 0.12, -0.07);
+    [-0.12, 0.12].forEach(x => box(0.012, 0.06, 0.22, kei, truck, x, 0.14, -0.07));
+    add(new THREE.PlaneGeometry(0.2, 0.08), M(0x1c2440, { roughness: .15, metalness: .4 }), truck, 0, 0.18, 0.192, false);
+    [-0.08, 0.08].forEach(x => add(new THREE.SphereGeometry(0.016, 8, 6), E(0xfff1c8, 1.4), truck, x, 0.09, 0.18, false));
+    [[-0.12, 0.1], [0.12, 0.1], [-0.12, -0.12], [0.12, -0.12]].forEach(([x, z]) => { const w = cyl(0.04, 0.04, 0.03, 10, M(0x17141c), truck, x, 0.04, z); w.rotation.z = Math.PI / 2; });
+    // traffic cones, utility box and a glowing vending machine
+    const coneM = M(0xff7a3c);
+    [[0.04, 0.15], [0.13, 0.08], [0.2, 0.36], [0.3, 0.46]].forEach(([x, z]) => {
+      cyl(0.001, 0.035, 0.1, 8, coneM, d, x, (z > 0.3 ? 0.1 : 0.16) + 0.05, z);
+      cyl(0.024, 0.028, 0.018, 8, white, d, x, (z > 0.3 ? 0.1 : 0.16) + 0.055, z);
+    });
+    box(0.14, 0.16, 0.1, M(0x9da0a4, { metalness: .4 }), d, -0.56, 0.24, -0.12);
+    const vend = new THREE.Group(); vend.position.set(0.58, 0.16, -0.28); vend.rotation.y = -0.35; d.add(vend);
+    box(0.17, 0.32, 0.13, M(0xe8e4ea), vend, 0, 0.16, 0);
+    add(new THREE.PlaneGeometry(0.13, 0.16), E(0xbfe8ff, 1.3), vend, 0, 0.21, 0.066, false);
+    for (let i = 0; i < 4; i++) add(new THREE.PlaneGeometry(0.022, 0.035), E([0xff5a3c, 0x4fe3cf, 0xffb45e, 0xa97dff][i], 1.2), vend, -0.045 + i * 0.03, 0.25, 0.067, false);
+    // utility pole with sagging wires into the house
+    const pole = new THREE.Group(); pole.position.set(-0.6, 0.16, 0.16); d.add(pole);
+    cyl(0.025, 0.03, 1.55, 8, M(0x8e8a86), pole, 0, 0.775, 0);
+    box(0.36, 0.03, 0.03, M(0x5b5752), pole, 0, 1.42, 0);
+    cyl(0.05, 0.05, 0.12, 8, M(0x6b6762), pole, 0.08, 1.28, 0.04);
+    const wireM = new THREE.LineBasicMaterial({ color: 0x14101a });
+    [[-0.16, 0.1], [0.16, 0.08]].forEach(([x, sag]) => {
+      const a = new THREE.Vector3(-0.6 + x, 1.58, 0.16), b = new THREE.Vector3(-0.3 + x, 1.22, -0.37);
+      const mid = a.clone().lerp(b, 0.5); mid.y -= sag;
+      d.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.QuadraticBezierCurve3(a, mid, b).getPoints(16)), wireM));
+    });
+    // little sakura tree beside the house
+    const tree = new THREE.Group(); tree.position.set(-0.74, 0.1, -0.56); d.add(tree);
+    cyl(0.02, 0.03, 0.4, 6, M(0x4a3226), tree, 0, 0.2, 0);
+    [[0, 0.46, 0, 0.16], [-0.1, 0.4, 0.05, 0.11], [0.09, 0.42, -0.04, 0.12]].forEach(([x, y, z, r], i) =>
+      add(new THREE.IcosahedronGeometry(r, 0), M(i ? 0xffb3cf : 0xff9cc0), tree, x, y, z));
+    // warm light from the shop, so the diorama glows at night
+    const shopLight = new THREE.PointLight(0xffa860, 0.9, 3.2, 1.8); shopLight.position.set(0.3, 0.55, -0.15); d.add(shopLight);
+    // falling sakura petals around the turntable
+    const petN = 60, petPos = new Float32Array(petN * 3), petPh = [];
+    for (let i = 0; i < petN; i++) { petPos.set([(Math.random() - .5) * 2.2, Math.random() * 2.4, (Math.random() - .5) * 2.2], i * 3); petPh.push(Math.random() * 6); }
+    const petalTex = canvasTex(64, 64, (c, w) => {
+      c.fillStyle = "#fff"; c.beginPath(); c.ellipse(w / 2, w / 2, w * .42, w * .22, 0.6, 0, 7); c.fill();
+    });
+    const petGeo = new THREE.BufferGeometry(); petGeo.setAttribute("position", new THREE.BufferAttribute(petPos, 3));
+    g.add(new THREE.Points(petGeo, new THREE.PointsMaterial({ size: 0.08, map: petalTex, alphaTest: 0.3, color: 0xffa8c8, transparent: true, opacity: .9, depthWrite: false })));
+    animators.push((t, dt) => {
+      tt.rotation.y = Math.sin(t * 0.3) * 0.45;
+      lantern.material.emissiveIntensity = 1.2 + Math.sin(t * 2.3) * 0.25 + (Math.sin(t * 17) > 0.95 ? 0.4 : 0);
+      rim.material.emissiveIntensity = 1.3 + Math.sin(t * 1.4) * 0.4;
+      const p = petGeo.attributes.position;
+      for (let i = 0; i < petN; i++) {
+        let y = p.getY(i) - dt * 0.18;
+        if (y < 0.6) y = 2.4;
+        p.setY(i, y); p.setX(i, p.getX(i) + Math.sin(t * 1.2 + petPh[i]) * dt * 0.12); p.setZ(i, p.getZ(i) + Math.cos(t * 0.9 + petPh[i]) * dt * 0.06);
+      }
+      p.needsUpdate = true;
+    });
+    reg("tokyo", g, [-6.3, 3.0, 3.9], [-6.3, 1.35, 3.9], [2.5, 2.1, 6.0]);
   }
 
   /* Project board on the left wall — opens the projects overview */
@@ -1006,6 +1165,7 @@
     box(3.5, 0.12, 0.12, trim, g, 0, 1.11, 0.02); box(3.5, 0.12, 0.12, trim, g, 0, -1.11, 0.02);
     box(0.12, 2.1, 0.12, trim, g, -1.71, 0, 0.02); box(0.12, 2.1, 0.12, trim, g, 1.71, 0, 0.02);
     const hex = c => parseInt(c.slice(1), 16);
+    const cardX = i => (i - (PROJECT_ORDER.length - 1) / 2) * Math.min(0.8, 2.9 / PROJECT_ORDER.length);
     PROJECT_ORDER.forEach((k, i) => {
       const p = PROJECTS[k];
       const tex = canvasTex(256, 320, (c, w, h) => {
@@ -1022,13 +1182,13 @@
         c.font = "500 18px 'JetBrains Mono', monospace"; c.fillStyle = "#5a4d6e";
         p.stack.slice(0, 3).forEach((s, j) => c.fillText("• " + s, 16, h - 84 + j * 26));
       });
-      const x = -1.2 + i * 0.8, y = i % 2 ? -0.12 : 0.1;
-      const card = add(new THREE.PlaneGeometry(0.62, 0.78), new THREE.MeshStandardMaterial({ map: tex, roughness: .9 }), g, x, y, 0.04, false);
-      card.rotation.z = [0.05, -0.04, 0.03, -0.06][i];
-      add(new THREE.SphereGeometry(0.045, 8, 6), E(hex(p.color), 0.6), g, x, y + 0.34, 0.07, false);
+      const x = cardX(i), y = i % 2 ? -0.12 : 0.1;
+      const card = add(new THREE.PlaneGeometry(0.56, 0.7), new THREE.MeshStandardMaterial({ map: tex, roughness: .9 }), g, x, y, 0.04, false);
+      card.rotation.z = [0.05, -0.04, 0.03, -0.06, 0.04][i % 5];
+      add(new THREE.SphereGeometry(0.045, 8, 6), E(hex(p.color), 0.6), g, x, y + 0.31, 0.07, false);
     });
     // string linking the pins
-    const pinPts = PROJECT_ORDER.map((_, i) => new THREE.Vector3(-1.2 + i * 0.8, (i % 2 ? -0.12 : 0.1) + 0.34, 0.075));
+    const pinPts = PROJECT_ORDER.map((_, i) => new THREE.Vector3(cardX(i), (i % 2 ? -0.12 : 0.1) + 0.31, 0.075));
     g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pinPts), new THREE.LineBasicMaterial({ color: 0xd84a4a })));
     // header strip
     const headTex = canvasTex(512, 64, (c, w, h) => {
